@@ -1,123 +1,123 @@
 <!-- src/main/resources/static/index.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>실시간 알림 테스트</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-    <style>
-        body { font-family: sans-serif; }
-        .container { padding: 10px; border: 1px solid #ccc; margin-bottom: 10px; }
-        #notification-list { list-style: none; padding: 0; }
-        #notification-list li { background-color: #f0f0f0; border: 1px solid #ddd; padding: 10px; margin-top: 5px; }
-    </style>
-</head>
-<body>
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>실시간 알림 테스트</title>-->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>-->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>-->
+<!--    <style>-->
+<!--        body { font-family: sans-serif; }-->
+<!--        .container { padding: 10px; border: 1px solid #ccc; margin-bottom: 10px; }-->
+<!--        #notification-list { list-style: none; padding: 0; }-->
+<!--        #notification-list li { background-color: #f0f0f0; border: 1px solid #ddd; padding: 10px; margin-top: 5px; }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
 
-<!-- 1. 로그인 (사용자 이름 설정) -->
-<div class="container">
-    <h3>1. 웹소켓 연결 (로그인)</h3>
-    <input type="text" id="username" placeholder="로그인할 이름을 입력 (예: alice)">
-    <button onclick="connect()">연결</button>
-    <div id="status" style="color: gray; margin-top: 5px;"></div>
-</div>
+<!--&lt;!&ndash; 1. 로그인 (사용자 이름 설정) &ndash;&gt;-->
+<!--<div class="container">-->
+<!--    <h3>1. 웹소켓 연결 (로그인)</h3>-->
+<!--    <input type="text" id="username" placeholder="로그인할 이름을 입력 (예: alice)">-->
+<!--    <button onclick="connect()">연결</button>-->
+<!--    <div id="status" style="color: gray; margin-top: 5px;"></div>-->
+<!--</div>-->
 
-<!-- 2. 알림 테스트 (HTTP API 호출) -->
-<div class="container">
-    <h3>2. 알림 전송 테스트 (HTTP API 호출)</h3>
-    <input type="text" id="target-username" placeholder="알림 보낼 대상 (예: bob)">
-    <button onclick="sendNotification()">알림 전송 (API 호출)</button>
-    <div id="api-status" style="color: blue; margin-top: 5px;"></div>
-</div>
+<!--&lt;!&ndash; 2. 알림 테스트 (HTTP API 호출) &ndash;&gt;-->
+<!--<div class="container">-->
+<!--    <h3>2. 알림 전송 테스트 (HTTP API 호출)</h3>-->
+<!--    <input type="text" id="target-username" placeholder="알림 보낼 대상 (예: bob)">-->
+<!--    <button onclick="sendNotification()">알림 전송 (API 호출)</button>-->
+<!--    <div id="api-status" style="color: blue; margin-top: 5px;"></div>-->
+<!--</div>-->
 
-<!-- 3. 수신된 알림 목록 -->
-<div class="container">
-    <h3>3. 내가 받은 알림</h3>
-    <ul id="notification-list">
-        <!-- 알림이 여기에 표시됩니다 -->
-    </ul>
-</div>
+<!--&lt;!&ndash; 3. 수신된 알림 목록 &ndash;&gt;-->
+<!--<div class="container">-->
+<!--    <h3>3. 내가 받은 알림</h3>-->
+<!--    <ul id="notification-list">-->
+<!--        &lt;!&ndash; 알림이 여기에 표시됩니다 &ndash;&gt;-->
+<!--    </ul>-->
+<!--</div>-->
 
-<script>
-    'use strict';
+<!--<script>-->
+<!--    'use strict';-->
 
-    let stompClient = null;
-    let myUsername = null;
-    const statusDiv = document.getElementById('status');
-    const notificationList = document.getElementById('notification-list');
+<!--    let stompClient = null;-->
+<!--    let myUsername = null;-->
+<!--    const statusDiv = document.getElementById('status');-->
+<!--    const notificationList = document.getElementById('notification-list');-->
 
-    // 1. WebSocket 연결 함수
-    function connect() {
-        myUsername = document.getElementById('username').value.trim();
-        if (!myUsername) {
-            alert('이름을 입력하세요.');
-            return;
-        }
+<!--    // 1. WebSocket 연결 함수-->
+<!--    function connect() {-->
+<!--        myUsername = document.getElementById('username').value.trim();-->
+<!--        if (!myUsername) {-->
+<!--            alert('이름을 입력하세요.');-->
+<!--            return;-->
+<!--        }-->
 
-        // (1) (핵심) 연결 시 쿼리 파라미터로 username 전달
-        const socket = new SockJS('/ws?username=' + myUsername);
-        stompClient = Stomp.over(socket);
+<!--        // (1) (핵심) 연결 시 쿼리 파라미터로 username 전달-->
+<!--        const socket = new SockJS('/ws?username=' + myUsername);-->
+<!--        stompClient = Stomp.over(socket);-->
 
-        stompClient.connect({}, onConnected, onError);
-        statusDiv.textContent = myUsername + ' 님으로 연결 시도 중...';
-    }
+<!--        stompClient.connect({}, onConnected, onError);-->
+<!--        statusDiv.textContent = myUsername + ' 님으로 연결 시도 중...';-->
+<!--    }-->
 
-    // 2. 연결 성공 시 콜백
-    function onConnected() {
-        statusDiv.textContent = myUsername + ' 님, WebSocket 연결 성공!';
+<!--    // 2. 연결 성공 시 콜백-->
+<!--    function onConnected() {-->
+<!--        statusDiv.textContent = myUsername + ' 님, WebSocket 연결 성공!';-->
 
-        // (2) (핵심) '/user/queue/notifications' 구독
-        //    서버는 이 경로를 /user/{myUsername}/queue/notifications 로 인식
-        stompClient.subscribe('/user/queue/notifications', onNotificationReceived);
-    }
+<!--        // (2) (핵심) '/user/queue/notifications' 구독-->
+<!--        //    서버는 이 경로를 /user/{myUsername}/queue/notifications 로 인식-->
+<!--        stompClient.subscribe('/user/queue/notifications', onNotificationReceived);-->
+<!--    }-->
 
-    // 3. 연결 실패 시 콜백
-    function onError(error) {
-        statusDiv.textContent = '연결 실패. F12 콘솔을 확인하세요.';
-        console.error(error);
-    }
+<!--    // 3. 연결 실패 시 콜백-->
+<!--    function onError(error) {-->
+<!--        statusDiv.textContent = '연결 실패. F12 콘솔을 확인하세요.';-->
+<!--        console.error(error);-->
+<!--    }-->
 
-    // 4. (서버->클라) 1:1 알림 수신
-    function onNotificationReceived(payload) {
-        const notification = JSON.parse(payload.body);
+<!--    // 4. (서버->클라) 1:1 알림 수신-->
+<!--    function onNotificationReceived(payload) {-->
+<!--        const notification = JSON.parse(payload.body);-->
 
-        const li = document.createElement('li');
-        li.textContent = "[실시간 알림] " + notification.message;
+<!--        const li = document.createElement('li');-->
+<!--        li.textContent = "[실시간 알림] " + notification.message;-->
 
-        // 새 알림을 목록 맨 위에 추가
-        notificationList.prepend(li);
-    }
+<!--        // 새 알림을 목록 맨 위에 추가-->
+<!--        notificationList.prepend(li);-->
+<!--    }-->
 
-    // 5. (클라->서버) 알림 전송 API 호출 (이건 WebSocket이 아님!)
-    function sendNotification() {
-        const targetUsername = document.getElementById('target-username').value.trim();
-        if (!targetUsername) {
-            alert('알림 보낼 대상을 입력하세요.');
-            return;
-        }
+<!--    // 5. (클라->서버) 알림 전송 API 호출 (이건 WebSocket이 아님!)-->
+<!--    function sendNotification() {-->
+<!--        const targetUsername = document.getElementById('target-username').value.trim();-->
+<!--        if (!targetUsername) {-->
+<!--            alert('알림 보낼 대상을 입력하세요.');-->
+<!--            return;-->
+<!--        }-->
 
-        const apiStatus = document.getElementById('api-status');
-        apiStatus.textContent = targetUsername + '에게 알림 전송 시도...';
+<!--        const apiStatus = document.getElementById('api-status');-->
+<!--        apiStatus.textContent = targetUsername + '에게 알림 전송 시도...';-->
 
-        // (3) (핵심) NotificationController에서 만든 HTTP API 호출
-        fetch('/api/send-notification/' + targetUsername, {
-            method: 'GET'
-        })
-        .then(response => response.text())
-        .then(result => {
-            apiStatus.textContent = "API 응답: " + result;
-        })
-        .catch(error => {
-            apiStatus.textContent = "API 호출 실패.";
-            console.error('Error:', error);
-        });
-    }
+<!--        // (3) (핵심) NotificationController에서 만든 HTTP API 호출-->
+<!--        fetch('/api/send-notification/' + targetUsername, {-->
+<!--            method: 'GET'-->
+<!--        })-->
+<!--        .then(response => response.text())-->
+<!--        .then(result => {-->
+<!--            apiStatus.textContent = "API 응답: " + result;-->
+<!--        })-->
+<!--        .catch(error => {-->
+<!--            apiStatus.textContent = "API 호출 실패.";-->
+<!--            console.error('Error:', error);-->
+<!--        });-->
+<!--    }-->
 
-</script>
+<!--</script>-->
 
-</body>
-</html>
+<!--</body>-->
+<!--</html>-->
 
 <!--<!DOCTYPE html>-->
 <!--<html>-->
